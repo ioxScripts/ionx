@@ -179,6 +179,10 @@ function loadscript(sp)
 	elseif sp == 'Deck' then
 		warn('[VORTEX]: Script not accessable yet.')
 	end
+	local quit = game:GetService('TweenService'):Create(Main, TweenInfo.new(.15, Enum.EasingStyle.Linear), {Size = UDim2.new(0, 0, 0, 0)})
+	quit:Play()
+	quit.Completed:Wait()
+	VortexScriptLoader:Destroy()
 end
 
 
