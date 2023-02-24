@@ -175,7 +175,7 @@ end)
 
 function loadscript(sp)
 	if sp == 'VortexCMD' then
-		loadstring(game:HttpGet('https://raw.githubusercontent.com/BloxIT8/ionx/main/VortexCommandline/script.lua', true))()
+		loadstring(game:HttpGet('https://raw.githubusercontent.com/ioxScripts/ionx/main/VortexCommandline/script.lua', true))()
 	elseif sp == 'Deck' then
 		warn('[VORTEX]: Script not accessable yet.')
 	end
