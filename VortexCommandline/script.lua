@@ -1,5 +1,5 @@
 local start = os.clock()
-local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/BloxIT8/ionx/main/VortexCommandline/lib.lua', true))()
+local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/ioxScripts/ionx/main/VortexCommandline/lib.lua', true))()
 
 local totalcommands = tostring(67) -- Yummy way of counting commands :sob:
 
