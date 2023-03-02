@@ -1,28 +1,40 @@
--- Tables & Variables:
-local selectedScript = nil
-local Descriptions = {
-	[1] = 'Vortex Command line is a user interface that allows the player to simply run commands on them self.',
-	[2] = 'Coming soon.'
+if not game:IsLoaded() then repeat task.wait() until game:IsLoaded() end
+
+
+local plr = game.Players.LocalPlayer
+
+local TypeDescriptions = {
+	['STARTUP'] = 'Hello '..plr.DisplayName..'!',
+	['CMDLINE'] = 'Vortex Command line is a user interface that allows the player to simply run commands on them self.',
+	['DECK'] = 'Coming soon.\nCheck back soon!'
+
 }
 
--- Instances:
+local Scripts = {
+	['CMDLINE'] = 'https://raw.githubusercontent.com/ioxScripts/ionx/main/VortexCommandline/script.lua',
+	['DECK'] = nil
+	
+}
+
+local selected = nil
 
 local VortexScriptLoader = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local UICorner = Instance.new("UICorner")
-local List = Instance.new("ScrollingFrame")
+local Close = Instance.new("TextButton")
+local Content = Instance.new("Frame")
+local ScriptsList = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
-local VortexCommandline = Instance.new("TextButton")
-local UICorner_2 = Instance.new("UICorner")
+local VortexCMD = Instance.new("TextButton")
 local Deck = Instance.new("TextButton")
-local UICorner_3 = Instance.new("UICorner")
-local Description = Instance.new("TextLabel")
-local UICorner_4 = Instance.new("UICorner")
-local Run = Instance.new("TextButton")
-local UICorner_5 = Instance.new("UICorner")
-local Quit = Instance.new("TextButton")
-local UICorner_6 = Instance.new("UICorner")
+local Script = Instance.new("Frame")
+local ScriptName = Instance.new("TextLabel")
+local Description = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local DescriptionScroll = Instance.new("ScrollingFrame")
+local DescText = Instance.new("TextLabel")
+local Execute = Instance.new("TextButton")
+local UICorner_2 = Instance.new("UICorner")
 
 --Properties:
 
@@ -33,157 +45,172 @@ VortexScriptLoader.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 Main.Name = "Main"
 Main.Parent = VortexScriptLoader
 Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+Main.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Main.BorderSizePixel = 0
 Main.Position = UDim2.new(0.5, 0, 0.5, 0)
-Main.Size = UDim2.new(0., 0, 0, 0)
-
+Main.Size = UDim2.new(0, 536, 0, 264)
 
 Title.Name = "Title"
 Title.Parent = Main
-Title.AnchorPoint = Vector2.new(0.5, 0.5)
-Title.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
+Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Title.BorderSizePixel = 0
-Title.Position = UDim2.new(0.5, 0, 0.0500000007, 0)
-Title.Size = UDim2.new(1, 0, 0.100000001, 0)
-Title.Font = Enum.Font.Unknown
-Title.Text = "Vortex V1"
-Title.TextColor3 = Color3.fromRGB(166, 12, 255)
-Title.TextScaled = true
-Title.TextSize = 14.000
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Font = Enum.Font.SourceSans
+Title.Text = "<font color=\"rgb(255, 0, 0)\"><b>V</b></font>ortex"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.RichText = true
+Title.TextSize = 30.000
 Title.TextWrapped = true
-Title.TextXAlignment = Enum.TextXAlignment.Left
 
-UICorner.CornerRadius = UDim.new(0.100000001, 0)
-UICorner.Parent = Main
+Close.Name = "Close"
+Close.Parent = Title
+Close.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Close.BackgroundTransparency = 1.000
+Close.Position = UDim2.new(0.899999976, 0, 0, 0)
+Close.Size = UDim2.new(0.100000001, 0, 0, 30)
+Close.Font = Enum.Font.SourceSans
+Close.Text = "<font color=\"rgb(255, 0, 0)\"><b>X</b></font>"
+Close.TextColor3 = Color3.fromRGB(0, 0, 0)
+Close.RichText = true
+Close.TextSize = 30.000
+Close.TextWrapped = true
+Close.MouseButton1Down:Connect(function()
+	local tween = game:GetService('TweenService'):Create(Main, TweenInfo.new(.1), {Size = UDim2.fromOffset(0,0)})
+	tween:Play()
+	tween.Completed:Wait()
+	VortexScriptLoader:Destroy()
+end)
 
-List.Name = "List"
-List.Parent = Main
-List.Active = true
-List.AnchorPoint = Vector2.new(0.5, 0.5)
-List.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-List.BackgroundTransparency = 1.000
-List.BorderSizePixel = 0
-List.Position = UDim2.new(0.25, 0, 0.550000012, 0)
-List.Size = UDim2.new(0.400000006, 0, 0.800000012, 0)
-List.ScrollBarThickness = 4
+Content.Name = "Content"
+Content.Parent = Main
+Content.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Content.BackgroundTransparency = 1.000
+Content.Position = UDim2.new(0, 0, 0, 30)
+Content.Size = UDim2.new(1, 0, 1, -30)
 
-UIListLayout.Parent = List
-UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+ScriptsList.Name = "ScriptsList"
+ScriptsList.Parent = Content
+ScriptsList.Active = true
+ScriptsList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScriptsList.BackgroundTransparency = 1.000
+ScriptsList.BorderSizePixel = 0
+ScriptsList.Size = UDim2.new(0.400000006, 0, 1, 0)
+ScriptsList.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+ScriptsList.ScrollBarThickness = 6
+ScriptsList.TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+
+UIListLayout.Parent = ScriptsList
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0.00999999978, 0)
+UIListLayout.Padding = UDim.new(0.0199999996, 0)
 
-VortexCommandline.Name = "VortexCommandline"
-VortexCommandline.Parent = List
-VortexCommandline.AnchorPoint = Vector2.new(0.5, 0.5)
-VortexCommandline.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-VortexCommandline.Size = UDim2.new(0.899999976, 0, 0.0700000003, 0)
-VortexCommandline.Font = Enum.Font.Nunito
-VortexCommandline.Text = "Vortex Command line"
-VortexCommandline.TextColor3 = Color3.fromRGB(255, 255, 255)
-VortexCommandline.TextScaled = true
-VortexCommandline.TextSize = 20.000
-VortexCommandline.TextWrapped = true
+VortexCMD.Name = "VortexCMD"
+VortexCMD.Parent = ScriptsList
+VortexCMD.RichText = true
+VortexCMD.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+VortexCMD.BorderSizePixel = 0
+VortexCMD.Size = UDim2.new(1, 0, 0, 30)
+VortexCMD.Font = Enum.Font.SourceSans
+VortexCMD.Text = "<font color=\"rgb(255, 0, 0)\"><b>V</b></font>ortex Commands"
+VortexCMD.TextColor3 = Color3.fromRGB(255, 255, 255)
+VortexCMD.TextSize = 30.000
 
-UICorner_2.CornerRadius = UDim.new(0.200000003, 0)
-UICorner_2.Parent = VortexCommandline
 
 Deck.Name = "Deck"
-Deck.Parent = List
-Deck.AnchorPoint = Vector2.new(0.5, 0.5)
-Deck.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-Deck.Size = UDim2.new(0.899999976, 0, 0.0700000003, 0)
-Deck.Font = Enum.Font.Nunito
-Deck.Text = "Deck (Coming Soon)"
+Deck.RichText = true
+Deck.Parent = ScriptsList
+Deck.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Deck.BorderSizePixel = 0
+Deck.Size = UDim2.new(1, 0, 0, 30)
+Deck.Font = Enum.Font.SourceSans
+Deck.Text = "<font color=\"rgb(255, 0, 0)\"><b>D</b></font>eck"
 Deck.TextColor3 = Color3.fromRGB(255, 255, 255)
-Deck.TextScaled = true
-Deck.TextSize = 20.000
-Deck.TextWrapped = true
+Deck.TextSize = 30.000
 
-UICorner_3.CornerRadius = UDim.new(0.200000003, 0)
-UICorner_3.Parent = Deck
+Script.Name = "Script"
+Script.Parent = Content
+Script.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Script.BackgroundTransparency = 1.000
+Script.Position = UDim2.new(0.400000006, 0, 0, 0)
+Script.Size = UDim2.new(0.600000024, 0, 1, 0)
+
+ScriptName.Name = "ScriptName"
+ScriptName.Parent = Script
+ScriptName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScriptName.BackgroundTransparency = 1.000
+ScriptName.Size = UDim2.new(1, 0, 0, 30)
+ScriptName.Font = Enum.Font.Ubuntu
+ScriptName.RichText = true
+ScriptName.Text = "Script name"
+ScriptName.TextColor3 = Color3.fromRGB(255, 255, 255)
+ScriptName.TextSize = 25.000
 
 Description.Name = "Description"
-Description.Parent = Main
-Description.AnchorPoint = Vector2.new(0.5, 0.5)
-Description.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-Description.Position = UDim2.new(0.725000024, 0, 0.400000006, 0)
-Description.Size = UDim2.new(0.400000006, 0, 0.5, 0)
-Description.Font = Enum.Font.Nunito
-Description.Text = ""
-Description.TextColor3 = Color3.fromRGB(255, 255, 255)
-Description.TextScaled = true
-Description.TextSize = 14.000
-Description.TextWrapped = true
+Description.Parent = Script
+Description.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Description.Position = UDim2.new(0, 5, 0, 35)
+Description.Size = UDim2.new(1, -10, 1, -80)
 
-UICorner_4.CornerRadius = UDim.new(0.100000001, 0)
-UICorner_4.Parent = Description
+UICorner.CornerRadius = UDim.new(0, 15)
+UICorner.Parent = Description
 
-Run.Name = "Run"
-Run.Parent = Main
-Run.AnchorPoint = Vector2.new(0.5, 0.5)
-Run.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-Run.Position = UDim2.new(0.850000024, 0, 0.800000012, 0)
-Run.Size = UDim2.new(0.25, 0, 0.150000006, 0)
-Run.Font = Enum.Font.Nunito
-Run.Text = "Execute"
-Run.TextColor3 = Color3.fromRGB(255, 255, 255)
-Run.TextScaled = true
-Run.TextSize = 14.000
-Run.TextWrapped = true
+DescriptionScroll.Name = "DescriptionScroll"
+DescriptionScroll.Parent = Description
+DescriptionScroll.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+DescriptionScroll.BackgroundTransparency = 1.000
+DescriptionScroll.Selectable = false
+DescriptionScroll.Size = UDim2.new(1, 0, 1, 0)
+DescriptionScroll.CanvasSize = UDim2.new(0, 0, 1, 0)
+DescriptionScroll.ScrollBarThickness = 6
 
-UICorner_5.CornerRadius = UDim.new(0.25, 0)
-UICorner_5.Parent = Run
+DescText.Name = "DescText"
+DescText.Parent = DescriptionScroll
+DescText.AnchorPoint = Vector2.new(0.5, 0.5)
+DescText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+DescText.BackgroundTransparency = 1.000
+DescText.BorderSizePixel = 0
+DescText.Position = UDim2.new(0.5, 0, 0.5, 0)
+DescText.Size = UDim2.new(1, 0, 1, 0)
+DescText.Font = Enum.Font.SourceSans
+DescText.RichText = true
+DescText.Text = TypeDescriptions['STARTUP']
+DescText.TextColor3 = Color3.fromRGB(255, 255, 255)
+DescText.TextSize = 25.000
+DescText.TextWrapped = true
 
-Quit.Name = "Quit"
-Quit.Parent = Main
-Quit.AnchorPoint = Vector2.new(0.5, 0.5)
-Quit.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-Quit.Position = UDim2.new(0.579999983, 0, 0.800000012, 0)
-Quit.Size = UDim2.new(0.25, 0, 0.150000006, 0)
-Quit.Font = Enum.Font.Nunito
-Quit.Text = "Quit"
-Quit.TextColor3 = Color3.fromRGB(255, 255, 255)
-Quit.TextScaled = true
-Quit.TextSize = 14.000
-Quit.TextWrapped = true
-Quit.MouseButton1Down:Connect(function()
-	local quit = game:GetService('TweenService'):Create(Main, TweenInfo.new(.15, Enum.EasingStyle.Linear), {Size = UDim2.new(0, 0, 0, 0)})
-	quit:Play()
-	quit.Completed:Wait()
-	VortexScriptLoader:Destroy()
+Execute.Name = "Execute"
+Execute.Parent = Script
+Execute.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Execute.Position = UDim2.new(0, 10, 1, -40)
+Execute.Size = UDim2.new(0.400000006, 0, 0, 30)
+Execute.Font = Enum.Font.SourceSans
+Execute.RichText = true
+Execute.Text = "Execute"
+Execute.TextColor3 = Color3.fromRGB(113, 255, 88)
+Execute.TextScaled = true
+Execute.TextSize = 14.000
+Execute.TextWrapped = true
+
+UICorner_2.Parent = Execute
+
+VortexCMD.MouseButton1Down:Connect(function()
+	selected = 'CMDLINE'
+	DescText.Text = TypeDescriptions['CMDLINE']
 end)
-
-UICorner_6.CornerRadius = UDim.new(0.25, 0)
-UICorner_6.Parent = Quit
-
-VortexCommandline.MouseButton1Down:Connect(function()
-	Description.Text = Descriptions[1]
-	selectedScript = 'VortexCMD'
-end)
-
-
 
 Deck.MouseButton1Down:Connect(function()
-	Description.Text = Descriptions[2]
-	selectedScript = 'Deck'
+	selected = 'DECK'
+	DescText.Text = TypeDescriptions['DECK']
 end)
 
-Run.MouseButton1Down:Connect(function()
-	loadscript(selectedScript)
-end)
-
-
-function loadscript(sp)
-	local quit = game:GetService('TweenService'):Create(Main, TweenInfo.new(.15, Enum.EasingStyle.Linear), {Size = UDim2.new(0, 0, 0, 0)})
-	quit:Play()
-	quit.Completed:Wait()
-	VortexScriptLoader:Destroy()
-	if sp == 'VortexCMD' then
-		loadstring(game:HttpGet('https://raw.githubusercontent.com/ioxScripts/ionx/main/VortexCommandline/script.lua', true))()
-	elseif sp == 'Deck' then
-		warn('[VORTEX]: Script not accessable yet.')
+Execute.MouseButton1Down:Connect(function()
+	if selected ~= nil then
+		DescText.Text = 'Attempting to execute: '..tostring(selected)
+		local tween = game:GetService('TweenService'):Create(Main, TweenInfo.new(.1), {Size = UDim2.fromOffset(0,0)})
+		tween:Play()
+		tween.Completed:Wait()
+		VortexScriptLoader:Destroy()
+		loadstring(game:HttpGet(Scripts[selected], true))()
+	else
+		DescText.Text = 'Select a script before attempting to execute!'
 	end
-end
-
-
-game:GetService('TweenService'):Create(Main, TweenInfo.new(.15, Enum.EasingStyle.Linear), {Size = UDim2.new(0.25, 0, 0.300000012, 0)}):Play()
+end)
