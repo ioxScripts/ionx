@@ -140,7 +140,7 @@ ScriptName.BackgroundTransparency = 1.000
 ScriptName.Size = UDim2.new(1, 0, 0, 30)
 ScriptName.Font = Enum.Font.Ubuntu
 ScriptName.RichText = true
-ScriptName.Text = "Script name"
+ScriptName.Text = ''
 ScriptName.TextColor3 = Color3.fromRGB(255, 255, 255)
 ScriptName.TextSize = 25.000
 
@@ -195,11 +195,13 @@ UICorner_2.Parent = Execute
 VortexCMD.MouseButton1Down:Connect(function()
 	selected = 'CMDLINE'
 	DescText.Text = TypeDescriptions['CMDLINE']
+	ScriptName.Text = 'Vortex Commands'
 end)
 
 Deck.MouseButton1Down:Connect(function()
 	selected = 'DECK'
 	DescText.Text = TypeDescriptions['DECK']
+	ScriptName.Text = 'Deck'
 end)
 
 Execute.MouseButton1Down:Connect(function()
@@ -213,4 +215,42 @@ Execute.MouseButton1Down:Connect(function()
 	else
 		DescText.Text = 'Select a script before attempting to execute!'
 	end
+end)
+
+local UserInputService = game:GetService("UserInputService")
+
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+Title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Title.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
 end)
