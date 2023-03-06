@@ -1,5 +1,5 @@
 local start = os.clock()
-local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/ioxScripts/ionx/main/VortexCommandline/lib.lua', true))()
+local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/ionxScript/ionx/main/VortexCommandline/lib.lua', true))()
 
 local totalcommands = tostring(67) -- Yummy way of counting commands :sob:
 
@@ -19,7 +19,7 @@ local IONXTWEENSPEED = 2
 
 espLib.options.enabled = false
 espLib.options.outOfViewArrows = false
-espLib.options.names = false
+espLib.options.names = true
 espLib.options.boxes = false
 espLib.options.tracers = false
 espLib.options.healthBars = false
@@ -29,7 +29,13 @@ espLib.options.distance = false
 espLib.options.outOfViewArrowsFilled = false
 espLib.options.outOfViewArrowsOutline = false
 
-
+function getResult(t)
+    if string.lower(t) == 'true' then
+        return true
+    else
+        return false
+    end
+end
 
 function CHMS(plr)
 	task.spawn(function()
@@ -1164,15 +1170,23 @@ Window:AddCommand('unesp', {}, 'Disables ESP', function(Arguments, Speaker)
 end)
 
 Window:AddCommand('config', {'cmd','property','true/false'}, 'Configure commands.', function(Arguments, Speaker)
-    if Arguments[1] == 'esp' then
-        if Arguments[2] == 'names' then
-            if Arguments[3] == 'true' then
-                print('worked?')
-                espLib.options.names = true
-                print('worked past set.')
-            else
-                espLib.options.names = false
-            end
+    if string.lower(Arguments[1]) == 'esp' then
+        if string.lower(Arguments[2]) == 'names' then
+            espLib.options.names = getResult(Arguments[3])
+        elseif string.lower(Arguments[2]) == 'outofviewarrows' then
+            espLib.options.outOfViewArrows = getResult(Arguments[3])
+        elseif string.lower(Arguments[2]) == 'boxes' then
+            espLib.options.boxes = getResult(Arguments[3])
+        elseif string.lower(Arguments[2]) == 'tracers' then
+            espLib.options.tracers = getResult(Arguments[3])
+        elseif string.lower(Arguments[2]) == 'healthbars' then
+            espLib.options.healthBars = getResult(Arguments[3])
+        elseif string.lower(Arguments[2]) == 'healthtext' then
+            espLib.options.healthText = getResult(Arguments[3])
+        elseif string.lower(Arguments[2]) == 'chams' then
+            espLib.options.chams = getResult(Arguments[3])
+        elseif string.lower(Arguments[2]) == 'distance' then
+            espLib.options.distance = getResult(Arguments[3])
         end
     end
 end)
