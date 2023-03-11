@@ -1,12 +1,13 @@
 local start = os.clock()
 local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/ioxScripts/ionx/main/VortexCommandline/lib.lua', true))()
 
-local totalcommands = tostring(67) -- Yummy way of counting commands :sob:
+local totalcommands = tostring('69 😏') -- Yummy way of counting commands :sob:
 
 local Window = Library:CreateWindow({Name = 'Vortex | '..totalcommands..' Commands',IntroText = 'Vortex\n_________\n\nYour #1 Command line utility script\n_____________________\n\n'..totalcommands..' Commands loaded',IntroIcon = 'rbxassetid://9789474876',IntroBlur = true,IntroBlurIntensity = 15,Theme = Library.Themes.dark,Position = 'top',Draggable = false,Prefix = ';'})
 
 
 local espLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/ioxScripts/ionx/main/Extra/esp.lua'),true))()
+local queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
 local req = (syn and syn.request) or (http and http.request) or http_request
 local http = game:GetService('HttpService')
 
@@ -234,50 +235,17 @@ Window:AddCommand('say', {'text'}, 'Makes you say something.', function(Argument
     game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Arguments[1], 'All');
 end)
 
-Window:AddCommand('headless', {}, 'Removes your head. [FE]', function(Arguments, Speaker)
-    local lp = game:GetService "Players".LocalPlayer
-        if lp.Character:FindFirstChild "Head" then
-            local char = lp.Character
-            char.Archivable = true
-            local new = char:Clone()
-            new.Parent = workspace
-            lp.Character = new
-            task.wait(2)
-            local oldhum = char:FindFirstChildWhichIsA "Humanoid"
-            local newhum = oldhum:Clone()
-            newhum.Parent = char
-            newhum.RequiresNeck = false
-            oldhum.Parent = nil
-            task.wait(2)
-            lp.Character = char
-            new:Destroy()
-            task.wait(1)
-            newhum:GetPropertyChangedSignal("Health"):Connect(
-            function()
-                if newhum.Health <= 0 then
-                    oldhum.Parent = lp.Character
-                    task.wait(1)
-                    oldhum:Destroy()
-                end
-            end)
-        workspace.CurrentCamera.CameraSubject = char
-        if char:FindFirstChild "Animate" then
-            char.Animate.Disabled = true
-            task.wait(.1)
-            char.Animate.Disabled = false
-        end
-        lp.Character:FindFirstChild "Head":Destroy()
-    end
-    if simulationradius then
-        game:GetService("RunService").Heartbeat:Connect(function()
-            setsimulationradius(1/0,1/0)
-        end)
-    end
-end)
+
 
 Window:AddCommand('reset', {}, 'Resets your character.', function(Arguments, Speaker)
     if plr.Character then
         plr.Character.Humanoid.Health = 0
+    end
+end)
+
+Window:AddCommand('forcereset', {}, 'Force resets your character.', function(Arguments, Speaker)
+    if plr.Character then
+        plr.Character:Destroy()
     end
 end)
 
@@ -1158,15 +1126,23 @@ Window:AddCommand('explorer', {}, 'Opens up DEX explorer.', function(Arguments, 
     loadstring(game:HttpGet("https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"))()
 end)
 
-Window:AddCommand('esp', {}, 'Enables ESP', function(Arguments, Speaker)
+Window:AddCommand('esp', {}, 'Enables ESP.', function(Arguments, Speaker)
     Window:CreateNotification('ESP', 'Requires a brain to use, check the discord to learn how to configure your esp to your likings. (using config command)',8)
     espLib:Load()
     espLib.options.enabled = true
 end)
 
-Window:AddCommand('unesp', {}, 'Disables ESP', function(Arguments, Speaker)
+Window:AddCommand('unesp', {}, 'Disables ESP.', function(Arguments, Speaker)
     espLib:Unload()
     espLib.options.enabled = false
+end)
+
+Window:AddCommand('kick', {'reason'}, 'Kick yourself.', function(Arguments, Speaker)
+    plr:Kick(Arguments[1])
+end)
+
+Window:AddCommand('shutdown', {}, 'Force shutdown roblox.', function(Arguments, Speaker)
+    game:shutdown()
 end)
 
 Window:AddCommand('config', {'cmd','property','true/false'}, 'Configure commands.', function(Arguments, Speaker)
@@ -1189,6 +1165,15 @@ Window:AddCommand('config', {'cmd','property','true/false'}, 'Configure commands
             espLib.options.distance = getResult(Arguments[3])
         end
     end
+end)
+
+
+game:GetService('Players').LocalPlayer.OnTeleport:Connect(function(State)
+	if State == Enum.TeleportState.Started then
+		if queueteleport then
+			queueteleport("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/ioxScripts/ionx/main/scriptloader/main.lua\"))()")
+		end
+	end
 end)
 
 
